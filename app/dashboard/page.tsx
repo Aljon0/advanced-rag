@@ -13,7 +13,7 @@ export default function DashboardPage() {
   const { data, isLoading, error, fetchStats } = useDashboard();
 
   // ── Build stats from real data ──────────────────────────────────────────
-  const stats = data?.stats
+  const stats = data
     ? [
         {
           label: "Documents",

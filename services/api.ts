@@ -1,12 +1,12 @@
 // src/services/api.ts
-import axios, { AxiosError, AxiosProgressEvent, AxiosResponse } from "axios";
+import { API_BASE_URL } from "@/lib/constants";
 import type {
   AskQuestionRequest,
   AskQuestionResponse,
   GetDocumentsResponse,
   UploadFileResponse,
 } from "@/types/api";
-import { API_BASE_URL } from "@/lib/constants";
+import axios, { AxiosError, AxiosProgressEvent, AxiosResponse } from "axios";
 
 // Axios instance with base config
 const apiClient = axios.create({
@@ -26,13 +26,13 @@ apiClient.interceptors.response.use(
       error.message ||
       "An unexpected error occurred";
     return Promise.reject(new Error(message));
-  }
+  },
 );
 
 // ─── Upload a PDF file to the backend ────────────────────────────────────────
 export async function uploadFile(
   file: File,
-  onProgress?: (percent: number) => void
+  onProgress?: (percent: number) => void,
 ): Promise<UploadFileResponse> {
   const formData = new FormData();
   formData.append("file", file);
@@ -48,7 +48,7 @@ export async function uploadFile(
           onProgress(percent);
         }
       },
-    }
+    },
   );
 
   return response.data;
@@ -56,11 +56,11 @@ export async function uploadFile(
 
 // ─── Send a question to the AI ────────────────────────────────────────────────
 export async function askQuestion(
-  payload: AskQuestionRequest
+  payload: AskQuestionRequest,
 ): Promise<AskQuestionResponse> {
   const response = await apiClient.post<AskQuestionResponse>(
     "/chat/ask",
-    payload
+    payload,
   );
   return response.data;
 }
@@ -92,6 +92,17 @@ export interface DashboardData {
 }
 
 export async function getDashboardStats(): Promise<DashboardData> {
-  const response = await apiClient.get<DashboardData>("/dashboard/stats");
-  return response.data;
+  const response = await apiClient.get("/dashboard/stats");
+  const raw = response.data;
+
+  // Reshape flat backend response → nested frontend shape
+  return {
+    stats: {
+      totalDocuments: raw.totalDocuments,
+      totalChunks: raw.totalChunks,
+      knowledgeBaseSize: `${((raw.totalChunks * 2.5) / 1024).toFixed(1)} MB`,
+      avgConfidence: raw.avgConfidence,
+    },
+    recentActivity: raw.recentActivity,
+  };
 }
