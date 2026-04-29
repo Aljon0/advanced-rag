@@ -25,7 +25,6 @@ const typeConfig = {
   },
 };
 
-/** Recent uploads and queries list on dashboard */
 export function RecentActivity({ items }: RecentActivityProps) {
   return (
     <Card>
@@ -34,21 +33,22 @@ export function RecentActivity({ items }: RecentActivityProps) {
       {items.length === 0 ? (
         <p className="text-sm text-gray-400 text-center py-6">No recent activity</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-3 sm:space-y-4">
           {items.map((item) => {
             const { icon: Icon, color } = typeConfig[item.type];
             return (
-              <li key={item.id} className="flex items-center gap-3">
-                {/* Type icon */}
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
-                  <Icon className="w-3.5 h-3.5" />
+              // Adjusted gap and flex-wrap for extremely narrow screens
+              <li key={item.id} className="flex items-start sm:items-center gap-2.5 sm:gap-3">
+                <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 sm:mt-0 ${color}`}>
+                  <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </div>
-                {/* Label */}
-                <p className="flex-1 text-sm text-gray-700 truncate">{item.label}</p>
-                {/* Date */}
-                <span className="text-xs text-gray-400 shrink-0">
-                  {formatDate(item.date)}
-                </span>
+                {/* Changed to flex-col on mobile to let date fall under the text naturally if needed */}
+                <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-[13px] sm:text-sm text-gray-700 truncate sm:pr-4">{item.label}</p>
+                  <span className="text-[10px] sm:text-xs text-gray-400 shrink-0 mt-0.5 sm:mt-0">
+                    {formatDate(item.date)}
+                  </span>
+                </div>
               </li>
             );
           })}

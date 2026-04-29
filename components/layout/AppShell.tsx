@@ -1,4 +1,7 @@
 // src/components/layout/AppShell.tsx
+"use client";
+
+import { useState, useCallback } from "react";
 import { Sidebar } from "./Sidebar";
 import { Navbar } from "./Navbar";
 
@@ -6,22 +9,27 @@ interface AppShellProps {
   children: React.ReactNode;
 }
 
-/**
- * Root layout wrapper — wraps every page with Sidebar + Navbar.
- * Content area has left padding to account for fixed sidebar.
- */
 export function AppShell({ children }: AppShellProps) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // By using useCallback, this function reference stays stable and 
+  // prevents the Sidebar's useEffect from accidentally triggering.
+  const handleCloseSidebar = useCallback(() => {
+    setIsSidebarOpen(false);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Fixed left sidebar */}
-      <Sidebar />
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        onClose={handleCloseSidebar} 
+      />
 
-      {/* Fixed top navbar — offset by sidebar width */}
-      <Navbar />
+      <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
 
-      {/* Scrollable content area */}
-      <main className="ml-56 pt-14 min-h-screen">
-        <div className="p-6">{children}</div>
+      {/* Main content area */}
+      <main className="lg:ml-56 pt-14 min-h-screen transition-all duration-200">
+        <div className="p-4 sm:p-6">{children}</div>
       </main>
     </div>
   );

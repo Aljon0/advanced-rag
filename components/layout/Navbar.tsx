@@ -1,49 +1,38 @@
 // src/components/layout/Navbar.tsx
 "use client";
 
+import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { Search, Bell } from "lucide-react";
 
-// Map routes to readable page titles
+interface NavbarProps {
+  onMenuClick: () => void;
+}
+
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/upload":    "Upload Documents",
-  "/chat":      "Ask Questions",
+  "/upload": "Upload Documents",
+  "/chat": "Ask Questions",
   "/documents": "My Documents",
 };
 
-/** Top navbar — shows current page title */
-export function Navbar() {
+export function Navbar({ onMenuClick }: NavbarProps) {
   const pathname = usePathname();
   const title = pageTitles[pathname] ?? "KnowledgeAI";
 
   return (
-    <header className="h-14 bg-white border-b border-gray-100 flex items-center justify-between px-6 fixed top-0 right-0 left-56 z-10">
-      {/* Page title */}
-      <h1 className="text-sm font-semibold text-gray-800">{title}</h1>
-
-      {/* Right actions */}
-      <div className="flex items-center gap-2">
-        {/* Search icon — placeholder for future search */}
+    // left-0 on mobile, lg:left-56 on desktop
+    <header className="h-14 bg-white border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 fixed top-0 right-0 left-0 lg:left-56 z-10 transition-all duration-200">
+      <div className="flex items-center gap-3">
+        {/* Hamburger menu button - Hidden on desktop */}
         <button
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
-          aria-label="Search"
+          onClick={onMenuClick}
+          className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+          aria-label="Open menu"
         >
-          <Search className="w-4 h-4" />
+          <Menu className="w-5 h-5" />
         </button>
 
-        {/* Notification bell — placeholder */}
-        <button
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
-          aria-label="Notifications"
-        >
-          <Bell className="w-4 h-4" />
-        </button>
-
-        {/* Avatar placeholder */}
-        <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center ml-1">
-          <span className="text-xs font-medium text-gray-600">U</span>
-        </div>
+        <h1 className="text-sm font-semibold text-gray-800">{title}</h1>
       </div>
     </header>
   );
